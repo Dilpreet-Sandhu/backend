@@ -12,7 +12,7 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
-    username: {
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -21,13 +21,13 @@ const userSchema = new Schema(
     },
     fullname: {
       type: String,
-      required: true,
       trim: true,
       index: true,
+      required : true
     },
-    avtar: {
+    avatar: {
       type: String,
-      required: true,
+      required : true
     },
     coverImage: {
       type: String,

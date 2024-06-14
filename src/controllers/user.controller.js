@@ -16,13 +16,13 @@ export const RegisterUser = asyncHandler(async function(req,res) {
     //check for user creation
     //return res
 
-    const {username,fullName,email,password} = req.body;
+    const {username,fullname,email,password} = req.body;
     
-    if ([username,fullName,email,password].some(item => item == '')) {
+    if ([username,fullname,email,password].some(item => item == '')) {
         throw new ApiError(400,"all fields are compulsory")
     }
 
-    const existingUser = User.findOne({
+    const existingUser = await User.findOne({
         $or : [{username},{email}]
     })
 
@@ -31,19 +31,31 @@ export const RegisterUser = asyncHandler(async function(req,res) {
     }
 
     const avatarLocalPath = req?.files?.avatar[0]?.path;
-    const coverImageLocalPath = req?.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req?.files?.coverImage[0]?.path;
+
+    let coverImageLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }else {coverImageLocalPath = ""}
     
     if (!avatarLocalPath) throw new ApiError(400,"avatar is required");
 
     const avatarImg = await uploadOnCloudinary(avatarLocalPath);
-    const coverImg = await uploadOnCloudinary(coverImageLocalPath);
+    let coverImg;
+    if (coverImageLocalPath !== "") {
+
+         coverImg = await uploadOnCloudinary(coverImageLocalPath);
+    }
+   
+
 
     const user = await User.create({
-        username : username.toLowerCase(),
-        avatarImg : avatarImg.url,
-        coverImg  : coverImg?.url || '',
-        fullName,
+        username,
+        avatar : avatarImg?.url,
+        coverImage  : coverImg?.url || "",
+        fullname,
         password,
+        email 
 
     })
 
@@ -60,4 +72,15 @@ export const RegisterUser = asyncHandler(async function(req,res) {
         new ApiResponse(200,createdUser,"user created successfully")
     )
 
+})
+
+export const LoginUser = asyncHandler(async function (req,res) {
+    //get email and password from frontend 
+    //check from database that email and password are correct
+    //give access to user
+    const {username,password,email} = req.body;
+
+    if (!username || !email) {
+        throw new ApiError(400,"username o")
+    }
 })
