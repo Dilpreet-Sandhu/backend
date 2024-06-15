@@ -46,7 +46,11 @@ const userSchema = new Schema(
       type: String,
     },
   },
-  { timestamps: true },
+  {
+    methods : {
+
+    }
+    , timestamps: true },
 );
 
 userSchema.pre("save", async function (next) {
@@ -55,11 +59,15 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrpyt.compare(password, this.password);
-};
+userSchema.methods.isPasswordCorrect = async function(password){
+  return await bcrpyt.compare(password, this.password)
+}
 
-userSchema.methods.generateAccessToken = function () {
+// userSchema.method("isPasswordCorrect",async function isPasswordCorrect(password) {
+//   return bcrpyt.compare(password,this.password)
+// })
+
+userSchema.methods.generateAccessToken = function() {
   return jwt.sign(
     {
       _id: this._id,
@@ -67,21 +75,21 @@ userSchema.methods.generateAccessToken = function () {
       username: this.username,
       fullname: this.fullname,
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.ACCESS_TOKEN_SECRET || "c1a30rv8PCNc4RYv1SvRRKfm05ievH",
     {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    },
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY  || "1d",
+    }
   );
 };
 
 userSchema.methods.generateRefreshToken = function () {
-  returnjwt.sign(
+  return jwt.sign(
     {
       _id: this._id,
     },
-    process.env.REFRESH_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET || "iSbVj6kaVMVbTPzm77d8dCxQj88r1",
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "10d",
     },
   );
 };
