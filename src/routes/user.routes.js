@@ -17,6 +17,6 @@ userRouter.route('/register').post(upload.fields([
 ]),RegisterUser)
 
 
-userRouter.route('/login').post(loginUser);
+userRouter.route('/login').post(loginUser)
 userRouter.route('/logout').post(verifyJWT,LogOut)
-userRouter.route('/refresh-token').post(refreshAccessToken)
+userRouter.route('/refresh-token').post(refreshAccessToken);
