@@ -70,7 +70,7 @@ export const RegisterUser = asyncHandler(async function (req, res) {
     throw new ApiError(500, "something went wrong while registring the user");
   }
 
-  return res
+  res
     .status(201)
     .json(new ApiResponse(200, createdUser, "user created successfully"));
 });
@@ -121,7 +121,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
-  console.log(await user.isPasswordCorrect(password));
+
   const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
@@ -338,10 +338,10 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
 
   if (!username?.trim()) throw new ApiError(400, "username not found");
 
-  const channel = User.aggregate([
+  const channel = await User.aggregate([
     {
       $match: {
-        username: username.toLowerCase(),
+        username: username?.toLowerCase(),
       },
     },
     {
@@ -363,18 +363,16 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
     {
       $addFields: {
         subscribersCount: {
-          $size: "subscribers",
+          $size: "$subscribers",
         },
-        subscribedToCount: {
-          $size: "subscribedTo",
+        channelsSubscribedToCount: {
+          $size: "$subscribedTo",
         },
         isSubscribed: {
           $cond: {
-            if: {
-              $in: [req.user?._id, "$subscribers.subscriber"],
-              then: true,
-              else: false,
-            },
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
           },
         },
       },
@@ -384,7 +382,7 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
         fullName: 1,
         username: 1,
         subscribersCount: 1,
-        subscribedToCount: 1,
+        channelsSubscribedToCount: 1,
         isSubscribed: 1,
         avatar: 1,
         coverImage: 1,
