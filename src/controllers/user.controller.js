@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteFileOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -102,7 +102,6 @@ export const loginUser = asyncHandler(async (req, res) => {
   //send cookie
 
   const { email, username, password } = req.body;
-  console.log(email);
 
   if (!username && !email) {
     throw new ApiError(400, "username or email is required");
@@ -280,6 +279,14 @@ export const updateAvatar = asyncHandler(async (req, res) => {
 
   const avatar = await uploadOnCloudinary(avatarPath);
 
+  const uSer = await User.findById(req.user?._id);
+
+  const deleteOldAvatara = await deleteFileOnCloudinary(uSer.avatar);
+
+
+  if (!deleteOldAvatara) throw new ApiError(500,"couldn't delete the old file")
+
+
   if (!avatar.url) throw new ApiError(400, "error while uploading avatar");
 
   const user = await User.findByIdAndUpdate(
@@ -308,6 +315,10 @@ export const updateCoverImg = asyncHandler(async (req, res) => {
   if (!coverImageUrl) throw new ApiError(400, "no coverImageUrl img found");
 
   const coverImage = await uploadOnCloudinary(coverImageUrl);
+
+  const uSer = await User.findById(req.user?._id);
+
+  const deleteOldCoverImage = await deleteFileOnCloudinary(uSer.coverImage);
 
   if (!coverImage.url)
     throw new ApiError(400, "error while uploading coverImage");

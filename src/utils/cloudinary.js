@@ -23,3 +23,22 @@ export const uploadOnCloudinary = async (localPath) => {
     return null;
   }
 };
+
+export const deleteFileOnCloudinary = async (localpath) => {
+  try {
+    if (!localpath) throw new Error("there is no localpath");
+
+    const arrayOfSlash = localpath.split('/');
+    const lastElement = arrayOfSlash.at(-1);
+    const arrayOfDots = lastElement.split('.');
+    const publicId = arrayOfDots[0];
+
+    const res = await cloudinary.uploader.destroy(publicId,{
+      invalidate : true
+    })
+
+    return res
+  } catch (error) {
+    console.log("couldn't delete the file" + error.message)
+  }
+}
