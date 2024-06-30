@@ -4,13 +4,16 @@ import {ApiResponse} from '../utils/ApiResponse.js';
 import {Subscription} from '../models/subscription.model.js'
 
 
-const toggleSubscription = asyncHandler(async (req,res) => {
+export const toggleSubscription = asyncHandler(async (req,res) => {
 
     const {channelId} = req.params;
     const userId = req.user?._id;
-    let unsubscribe;
 
-    let subscription = await Subscription.findOne({channel : channelId})
+    if (!userId) {
+        throw new ApiError(400,"you should be logged in to subscribe")
+    }
+
+    let subscription = await Subscription.findOne({$and : [{channel : channelId},{subscriber : userId}]})
 
     if (!subscription) {
         subscription = await Subscription.create({
@@ -18,9 +21,9 @@ const toggleSubscription = asyncHandler(async (req,res) => {
             subscriber : userId
         })
     }
-    else {
-        subscription = await Subscription.deleteOne({channel : channelId})   
-    }
+    else{
+         subscription = await Subscription.deleteOne({subscriber  : userId})  
+    } 
     
 
     
@@ -32,4 +35,36 @@ const toggleSubscription = asyncHandler(async (req,res) => {
 
 
 
+})
+
+
+export const subscribersCount = asyncHandler(async (req,res) => {
+
+    const {channelId} = req.params;
+
+    const subscription = await Subscription.find({channel : channelId});
+
+    if (!subscription) {
+        res.json(new ApiResponse(400,{},"zero subscriptions"))
+    }
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200,subscription.length,"subscriptions fetched")
+    )
+})
+
+export const subscriptionsCount = asyncHandler(async (req,res) => {
+
+    const userId = req.user?._id;
+
+    const subscription = await Subscription.find({subscriber : userId});
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200,subscription.length,"subscriptions fethced sucessfully")
+    )
+    
 })
