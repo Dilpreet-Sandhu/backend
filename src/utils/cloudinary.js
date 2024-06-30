@@ -34,9 +34,7 @@ export const deleteFileOnCloudinary = async (localpath) => {
     const arrayOfDots = lastElement.split('.');
     const publicId = arrayOfDots[0];
 
-    const res = await cloudinary.uploader.destroy(publicId,{
-      invalidate : true
-    })
+    const res = await cloudinary.uploader.destroy(publicId)
 
     return res
   } catch (error) {
