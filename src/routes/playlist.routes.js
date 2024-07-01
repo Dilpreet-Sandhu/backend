@@ -5,9 +5,9 @@ import {verifyJWT} from '../middlewares/auth.middleware.js'
 export const PlayListRouter = Router();
 
 PlayListRouter.route('/add').post(verifyJWT,createPlayList)
-PlayListRouter.route('/:playListId').get(verifyJWT,getUserPlayList)
+PlayListRouter.route('/getUserPlaylist').get(verifyJWT,getUserPlayList)
 PlayListRouter.route('/byId/:playListId').get(getPlayListById)
-PlayListRouter.route('/addVid/:playListId/:videos').put(addVideoToPlayList)
+PlayListRouter.route('/addVid/:playListId/:videos').post(addVideoToPlayList)
 PlayListRouter.route('/del/:playListId').delete(deletePlayList)
-PlayListRouter.route('/delSinVid/:playListId/:video').patch(deleteVideoFromPlayList)
+PlayListRouter.route('/delSingleVid/:playListId/:video').patch(deleteVideoFromPlayList)
 PlayListRouter.route('/update/:playListId').patch(updatePlayList)

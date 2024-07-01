@@ -73,7 +73,7 @@ export const getPlayListById = asyncHandler(async (req,res) => {
     res
     .status(200)
     .json(
-        new ApiResponse(200,playList,"fetched playList successfully")
+        new ApiResponse(200,playList,"fetched playList by id successfully")
     )
 
 })
@@ -82,15 +82,10 @@ export const addVideoToPlayList = asyncHandler(async (req,res) => {
 
     const {playListId,videos} = req.params;
 
-    const playList = await PlayList.findByIdAndUpdate(playListId,{
-        $push : {
-            videosId : {
-                $each : videos
-            }
-        }
-    },{
-        new : true
-    })
+    const playList = await PlayList.findOne({ _id : playListId});
+
+    playList.videosId.push(playListId);
+    await playList.save({validateBeforeSave : false})
     
 
     res
