@@ -3,7 +3,31 @@ import {ApiError} from '../utils/ApiError.js';
 import {deleteFileOnCloudinary, uploadOnCloudinary} from '../utils/cloudinary.js';
 import {Video} from '../models/video.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
-import {getVideoDurationInSeconds } from 'get-video-duration' 
+import {getVideoDurationInSeconds } from 'get-video-duration' ;
+
+
+export const getAllVideos = asyncHandler(async (req,res) => {
+
+    const {page} = req.query;
+
+    const limit = 20;
+
+    const skip = (page - 1) * limit;
+
+    const video = await Video.find().skip(skip).limit(20).select("-isPublished").populate("owner","username avatar");
+
+
+    if (!video) {
+        throw new ApiError(400,'no video found')
+    }
+
+
+
+    res.status(200)
+    .json(new ApiResponse(200,video,"fetched videos sucessfully"))
+
+    
+})
 
 export const publishVideo = asyncHandler(async (req,res) => {
     //data from the frontend
@@ -126,3 +150,4 @@ export const togglePublishStatus = asyncHandler(async (req,res) => {
     await video.save({validateBeforeSave : false})
 
 })
+

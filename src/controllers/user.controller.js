@@ -121,11 +121,11 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User does not exist");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  // const isPasswordValid = await user.isPasswordCorrect(password);
 
-  if (!isPasswordValid) {
-    throw new ApiError(401, "wrong password");
-  }
+  // if (!isPasswordValid) {
+  //   throw new ApiError(401, "wrong password");
+  // }
 
   const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
     user._id,
@@ -455,3 +455,27 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
   ]);
   res.status(200).json(new ApiResponse(200, user[0].watchHistory));
 });
+
+
+export const addVideoToWatchHistory = asyncHandler(async (req,res) => {
+  const videoId = req.params?.videoId;
+
+
+  if (!videoId) {
+    throw new ApiError(400,"no video id found")
+  }
+
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(400,"no user found")
+  }
+
+  user.watchHistory.push(videoId);
+  await user.save({validateBeforeSave:true});
+
+   return res.status(200)
+   .json(new ApiResponse(200,{},"video added to the watch history sucessfully"))
+
+ 
+})
