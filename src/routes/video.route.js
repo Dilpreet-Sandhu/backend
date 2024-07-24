@@ -5,12 +5,12 @@ import {verifyJWT} from '../middlewares/auth.middleware.js'
 
 export const videoRouter = Router();
 
-videoRouter.route('/allVids').get(getAllVideos)
+
 
 
 videoRouter.use(verifyJWT)
 
-videoRouter.route('/').post(upload.fields([
+videoRouter.route('/').get(getAllVideos).post(upload.fields([
     {
         name : "thumbnail",
         maxCount : 1
