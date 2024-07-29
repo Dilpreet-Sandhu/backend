@@ -4,6 +4,10 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 export default app;
+import dotenv from 'dotenv';
+dotenv.config()
+
+
 
 app.use(
   cors({

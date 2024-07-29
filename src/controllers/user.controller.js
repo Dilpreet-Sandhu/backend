@@ -189,7 +189,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   try {
     const decodedToken = jwt.verify(
       incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET || "c1a30rv8PCNc4RYv1SvRRKfm05ievH",
+      process.env.REFRESH_TOKEN_SECRET ,
     );
 
     const user = await User.findById(decodedToken?._id);
