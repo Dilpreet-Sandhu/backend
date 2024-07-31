@@ -14,7 +14,6 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 export const videoRouter = Router();
 
-videoRouter.use(verifyJWT);
 
 videoRouter
   .route("/")
@@ -33,6 +32,7 @@ videoRouter
     verifyJWT,
     publishVideo,
   );
+videoRouter.use(verifyJWT);
 videoRouter.route("/getsubbvid").get(getSubscribedVideos);
 videoRouter
   .route("/:videoId")
